@@ -1,17 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { ThemeProvider as MUIThemeProvider } from '@material-ui/styles'
+import { theme as muiTheme } from './utils/mui-theme'
+import {
+  CSSReset,
+  ThemeProvider as ChakraThemeProvider,
+  theme as chakraTheme,
+} from '@chakra-ui/core'
+import './index.css'
+import { App } from './App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <MUIThemeProvider theme={muiTheme}>
+      <ChakraThemeProvider theme={chakraTheme}>
+        <CSSReset />
+        <App />
+      </ChakraThemeProvider>
+    </MUIThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+)
