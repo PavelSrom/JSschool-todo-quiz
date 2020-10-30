@@ -70,29 +70,31 @@ export const TodoPage: React.FC = () => {
           onSubmit={handleSubmit}
           validationSchema={validationSchema}
         >
-          <Form>
-            <Stack spacing={2}>
-              <Field
-                as={Input}
-                name="text"
-                placeholder="Todo text..."
-                isFullWidth
-                isRequired
-              />
-              <Field as={Checkbox} name="important">
-                Important
-              </Field>
+          {({ values }) => (
+            <Form>
+              <Stack spacing={2}>
+                <Field
+                  as={Input}
+                  name="text"
+                  placeholder="Todo text..."
+                  isFullWidth
+                  isRequired
+                />
+                <Field as={Checkbox} name="important" isChecked={values.important}>
+                  Important
+                </Field>
 
-              <Button
-                style={{ marginTop: 32 }}
-                type="submit"
-                variant="solid"
-                variantColor="blue"
-              >
-                Add todo
-              </Button>
-            </Stack>
-          </Form>
+                <Button
+                  style={{ marginTop: 32 }}
+                  type="submit"
+                  variant="solid"
+                  variantColor="blue"
+                >
+                  Add todo
+                </Button>
+              </Stack>
+            </Form>
+          )}
         </Formik>
 
         <TodoList todos={todos} onDelete={deleteTodo} />
