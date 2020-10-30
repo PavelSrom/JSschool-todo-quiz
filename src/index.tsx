@@ -10,7 +10,7 @@ import {
 import './index.css'
 import { App } from './App'
 
-ReactDOM.render(
+const app = (
   <React.StrictMode>
     <MUIThemeProvider theme={muiTheme}>
       <ChakraThemeProvider theme={chakraTheme}>
@@ -18,6 +18,7 @@ ReactDOM.render(
         <App />
       </ChakraThemeProvider>
     </MUIThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )
+
+ReactDOM.render(app, document.getElementById('root'))
