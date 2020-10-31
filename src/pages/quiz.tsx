@@ -1,11 +1,11 @@
 import React from 'react'
-import { Button, Text, Progress } from '@chakra-ui/core'
+import { Button, Text, Progress, useToast } from '@chakra-ui/core'
 import { makeStyles } from '@material-ui/styles'
 import { Page } from '../hoc/Page'
 import { useQuiz } from '../utils/hooks'
 import { Theme } from '../utils/mui-theme'
 
-const useStyles = makeStyles<Theme>(theme => ({
+const useStyles = makeStyles<Theme>(() => ({
   container: {
     flex: 1,
     display: 'flex',
@@ -17,6 +17,8 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 export const QuizPage: React.FC = () => {
   const classes = useStyles()
+  const toast = useToast()
+
   const {
     currQuestion,
     numOfCorrect,
@@ -27,10 +29,6 @@ export const QuizPage: React.FC = () => {
     answerQuestion,
     nextStep,
   } = useQuiz()
-
-  // useEffect(() => {
-  //   console.log(quiz)
-  // }, [quiz])
 
   return (
     <Page style={{ display: 'flex' }}>
@@ -62,11 +60,31 @@ export const QuizPage: React.FC = () => {
             <div style={{ display: 'flex', marginTop: 16 }}>
               {quiz[currQuestion].possibleAnswers.map(answer => (
                 <Button
+                  isDisabled={!!quiz[currQuestion].userAnswer}
                   style={{ margin: 8 }}
                   key={answer}
-                  variant={answer === quiz[currQuestion].userAnswer ? 'solid' : 'outline'}
-                  variantColor="orange"
-                  onClick={() => answerQuestion(answer)}
+                  variant="solid"
+                  variantColor={
+                    quiz[currQuestion].userAnswer &&
+                    answer === quiz[currQuestion].correctAnswer
+                      ? 'green'
+                      : 'cyan'
+                  }
+                  onClick={() => {
+                    const answerIsCorrect = answer === quiz[currQuestion].correctAnswer
+
+                    if (!quiz[currQuestion].userAnswer) {
+                      answerQuestion(answer)
+
+                      toast({
+                        description: answerIsCorrect
+                          ? 'Well done!'
+                          : 'Oops, better luck next time!',
+                        status: answerIsCorrect ? 'success' : 'error',
+                        duration: 3000,
+                      })
+                    }
+                  }}
                 >
                   {answer}
                 </Button>

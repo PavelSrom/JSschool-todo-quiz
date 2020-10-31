@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { initialQuiz } from './quiz-data'
 import { QuizItem } from './types'
 
 type QuizReturnType = {
@@ -11,32 +12,6 @@ type QuizReturnType = {
   resetQuiz: () => void
   answerQuestion: (userAnswer: string) => void
 }
-
-const initialQuiz: QuizItem[] = [
-  {
-    question: "What is Pavel's favorite framework / library?",
-    correctAnswer: 'React',
-    possibleAnswers: ['Angular', 'JQuery', 'React', 'Flask'],
-    userAnswer: '',
-  },
-  {
-    question: 'When did Pavel start learning React?',
-    correctAnswer: 'July 2019',
-    possibleAnswers: ['July 2019', 'July 2018', 'December 2019', 'January 2019'],
-    userAnswer: '',
-  },
-  {
-    question: 'Why does Pavel use TypeScript instead of JavaScript?',
-    correctAnswer: 'To write bug-free code',
-    possibleAnswers: [
-      'To brag about it',
-      'Because it\'s the "hot" stuff now',
-      'Just for fun, YOLO',
-      'To write bug-free code',
-    ],
-    userAnswer: '',
-  },
-]
 
 /**
  * I had 3 options how to do the quiz stuff:
@@ -62,6 +37,7 @@ export const useQuiz = (): QuizReturnType => {
       setNumOfCorrect(numOfCorrectAnswers)
       setQuizStatus('done')
     }
+
     setCurrQuestion(prev => prev + 1)
   }
 
