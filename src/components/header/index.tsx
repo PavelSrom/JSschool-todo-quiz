@@ -15,10 +15,6 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 const navigationLinks: { label: string; link: string }[] = [
   {
-    label: 'Home',
-    link: '/',
-  },
-  {
     label: 'Todos',
     link: '/todo',
   },
