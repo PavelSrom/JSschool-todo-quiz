@@ -1,9 +1,17 @@
 import React, { useState } from 'react'
 import { Formik, Form, Field, FormikHelpers } from 'formik'
-import * as Yup from 'yup'
 import { nanoid } from 'nanoid'
 import { makeStyles } from '@material-ui/styles'
-import { Box, Input, Checkbox, Stack, Button, useToast } from '@chakra-ui/core'
+import {
+  Box,
+  Input,
+  Checkbox,
+  Stack,
+  Button,
+  Text,
+  Switch,
+  useToast,
+} from '@chakra-ui/core'
 import { Theme } from '../utils/mui-theme'
 import { Page } from '../hoc/Page'
 import { TodoItem } from '../utils/types'
@@ -17,11 +25,6 @@ const useStyles = makeStyles<Theme>(theme => ({
   },
 }))
 
-const validationSchema = Yup.object().shape({
-  text: Yup.string().required('This field is required'),
-  important: Yup.boolean().required('This field is required'),
-})
-
 const initialValues: TodoItem = {
   text: '',
   important: false,
@@ -29,6 +32,9 @@ const initialValues: TodoItem = {
 
 export const TodoPage: React.FC = () => {
   const [todos, setTodos] = useState<TodoItem[]>([])
+  const [searchedTodos, setSearchedTodos] = useState<TodoItem[]>([])
+  const [search, setSearch] = useState<string>('')
+  const [isSearchMode, setIsSearchMode] = useState<boolean>(false)
   const classes = useStyles()
   const toast = useToast()
 
@@ -36,7 +42,6 @@ export const TodoPage: React.FC = () => {
     newTodo: TodoItem,
     { resetForm }: FormikHelpers<TodoItem>
   ): void => {
-    console.log(newTodo)
     setTodos(prev => [...prev, { ...newTodo, id: nanoid() }])
     resetForm()
     toast({
@@ -46,9 +51,6 @@ export const TodoPage: React.FC = () => {
       duration: 4000,
     })
   }
-
-  // eslint-disable-next-line
-  const updateTodo = (todoToUpdate: TodoItem): void => {}
 
   const deleteTodo = (todoId: string): void => {
     setTodos(prev => prev.filter(({ id }) => id !== todoId))
@@ -60,44 +62,74 @@ export const TodoPage: React.FC = () => {
     })
   }
 
+  const searchTodos = (query: string): void => {
+    setSearch(query)
+    setSearchedTodos(
+      todos.filter(({ text }) => text.toLowerCase().startsWith(query.toLowerCase()))
+    )
+  }
+
   return (
     <Page>
       <Box maxW="lg" className={classes.page}>
-        <Formik
-          initialValues={initialValues}
-          validateOnChange={false}
-          validateOnBlur={false}
-          onSubmit={handleSubmit}
-          validationSchema={validationSchema}
-        >
-          {({ values }) => (
-            <Form>
-              <Stack spacing={2}>
-                <Field
-                  as={Input}
-                  name="text"
-                  placeholder="Todo text..."
-                  isFullWidth
-                  isRequired
-                />
-                <Field as={Checkbox} name="important" isChecked={values.important}>
-                  Important
-                </Field>
+        <Stack align="center" isInline style={{ marginBottom: 32 }}>
+          <Text fontSize="xl">Add new</Text>
+          <Switch
+            isChecked={isSearchMode}
+            onChange={e => {
+              // @ts-ignore
+              setIsSearchMode(e.target.checked)
+              setSearchedTodos(todos)
+            }}
+          />
+          <Text fontSize="xl">Search</Text>
+        </Stack>
 
-                <Button
-                  style={{ marginTop: 32 }}
-                  type="submit"
-                  variant="solid"
-                  variantColor="blue"
-                >
-                  Add todo
-                </Button>
-              </Stack>
-            </Form>
-          )}
-        </Formik>
+        {isSearchMode ? (
+          <Input
+            isFullWidth
+            value={search}
+            placeholder="Search todos..."
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              searchTodos(e.target.value)
+            }
+          />
+        ) : (
+          <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+            {({ values }) => (
+              <Form>
+                <Stack spacing={2}>
+                  <Field
+                    as={Input}
+                    name="text"
+                    placeholder="Todo text..."
+                    isFullWidth
+                    isRequired
+                  />
+                  <Field as={Checkbox} name="important" isChecked={values.important}>
+                    Important
+                  </Field>
 
-        <TodoList todos={todos} onDelete={deleteTodo} />
+                  <Button
+                    style={{ marginTop: 32 }}
+                    type="submit"
+                    variant="solid"
+                    variantColor="blue"
+                  >
+                    Add todo
+                  </Button>
+                </Stack>
+              </Form>
+            )}
+          </Formik>
+        )}
+
+        <TodoList
+          isSearchMode={isSearchMode}
+          todos={todos}
+          searchedTodos={searchedTodos}
+          onDelete={deleteTodo}
+        />
       </Box>
     </Page>
   )

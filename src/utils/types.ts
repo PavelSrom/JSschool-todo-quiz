@@ -3,3 +3,10 @@ export type TodoItem = {
   text: string
   important: boolean
 }
+
+export type QuizItem = {
+  question: string
+  possibleAnswers: string[]
+  userAnswer: string
+  correctAnswer: string
+}

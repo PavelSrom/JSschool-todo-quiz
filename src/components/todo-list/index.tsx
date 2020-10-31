@@ -14,18 +14,29 @@ const useStyles = makeStyles<Theme>(theme => ({
 
 type Props = {
   todos: TodoItem[]
+  searchedTodos: TodoItem[]
+  isSearchMode: boolean
   onDelete: (id: string) => void
 }
 
-export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
+export const TodoList: React.FC<Props> = ({
+  todos,
+  searchedTodos,
+  isSearchMode,
+  onDelete,
+}) => {
   const classes = useStyles()
+
+  const todosToRender = isSearchMode ? searchedTodos : todos
 
   return (
     <div>
-      <h1>Todos:</h1>
+      <Text fontSize="2xl" style={{ textAlign: 'center' }}>
+        Your todos:
+      </Text>
 
       <List>
-        {todos.map(({ id, text, important }) => (
+        {todosToRender.map(({ id, text, important }) => (
           <ListItem key={id} className={classes.listItem}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
@@ -33,24 +44,14 @@ export const TodoList: React.FC<Props> = ({ todos, onDelete }) => {
                 {important && <Badge variantColor="red">Important</Badge>}
               </div>
 
-              <div style={{ display: 'flex' }}>
-                <Tooltip label="Update todo" aria-label="">
-                  <IconButton
-                    aria-label=""
-                    icon="edit"
-                    color="green.500"
-                    style={{ marginRight: 8 }}
-                  />
-                </Tooltip>
-                <Tooltip label="Delete todo" aria-label="">
-                  <IconButton
-                    aria-label=""
-                    icon="delete"
-                    color="red.500"
-                    onClick={() => onDelete(id!)}
-                  />
-                </Tooltip>
-              </div>
+              <Tooltip label="Delete todo" aria-label="">
+                <IconButton
+                  aria-label=""
+                  icon="delete"
+                  color="red.500"
+                  onClick={() => onDelete(id!)}
+                />
+              </Tooltip>
             </div>
           </ListItem>
         ))}
